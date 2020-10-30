@@ -1,0 +1,100 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+#define max 10
+#define true 1
+#define false 0
+struct stack
+{
+	int top;
+	char items[max];
+}s;
+char postfix[100],infix[100];
+void push(char);
+char pop();
+void convert();
+int precedence(char);
+int empty();
+main()
+{
+	s.top=-1;
+	printf("enter infix expression\n");
+	scanf("%s",infix);
+	convert();
+	printf("the postfix expression is %s\n",postfix);
+}
+void push(char x)
+{
+	if(s.top==(max-1))
+	printf("full\n");
+	else
+	{
+		s.top++;
+		s.items[s.top]=x;
+	}
+}
+char pop()
+{
+	if(s.top==-1)
+	printf("empty\n");
+	return s.items[(s.top)--];
+}
+int empty()
+{
+	if(s.top==-1)
+	return true;
+	else
+	return false;
+}
+void convert()
+{
+	int i;
+	char temp,pos,symb;
+	for(i=0;infix[i]!='\0';i++)
+	{
+		symb=infix[i];
+		switch(symb)
+		{
+			case '(':push(symb);
+						break;
+			case ')':while((temp=pop())!='(')
+					{
+						postfix[pos++]=temp;
+					}
+					break;
+			case '^':
+			case '*':
+			case '/':
+			case '%':
+			case '+':
+			case '-':while(!empty()&&precedence(s.items[s.top])>=precedence(symb))
+					{
+						postfix[pos++]=pop();
+					}
+					push(symb);
+					break;
+			default:postfix[pos++]=symb;
+					break;
+		}
+	}
+	while(!empty())
+	{
+		temp=pop();
+		postfix[pos++]=temp;
+	}
+}
+int precedence(char symb)
+{
+	switch(symb)
+	{
+		case '^':return(3);
+		case '*':
+		case '/':
+		case '%':return(2);
+		case '+':
+		case '-':return(1);
+		case '(':
+		case ')':return(0);
+	}
+	return symb;
+}
